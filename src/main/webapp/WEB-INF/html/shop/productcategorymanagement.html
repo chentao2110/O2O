@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>商品分类管理</title>
+
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- 最新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet"
+          href="../resources/css/shop/productcategorymanagement.css"/>
+
+
+    <style>
+        .backbgc {
+
+            width: 70px;
+            font-size: 30px;
+
+        }
+
+
+         .col-xs-2{
+             margin-top: 20px;
+             margin-bottom: 10px;
+         }
+
+       .row .col-xs-6 button{
+            display: block;
+            width: 375px;
+            height: 45px;
+
+        }
+        a:hover{
+           cursor: pointer;
+       }
+
+    </style>
+
+</head>
+<body>
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-xs-2">
+            <a class="button backbgc" href="javascript:history.back(-1)"><span class="glyphicon glyphicon-chevron-left ">返回</span>
+            </a>
+        </div>
+        <div class="col-xs-8  ">
+        <h1 class="title text-center">商品分类管理</h1>
+        </div>
+        <div class="clearfix visible-xs"></div>
+    </div>
+    <table class="table  table-bordered table-striped table-hover category-wrap">
+
+        <tr>
+        <th class="col-33">类别</th>
+        <th class="col-33">优先级</th>
+        <th class="col-33">操作</th>
+        </tr>
+
+
+
+    </table>
+
+        <div class="row">
+
+            <div class="col-xs-6 ">
+                <button href="#" type="button" class="btn btn-primary btn-lg btn-block  center-block "
+                   id="new">新增</button>
+            </div>
+            <div class="col-xs-6 ">
+                <button href="#" type="button" class="btn btn-block btn-danger btn-lg   center-block " id="submit">提交</button>
+            </div>
+
+        </div>
+</div>
+
+<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript"
+        src="../resources/js/shop/productcategorymanagement.js"
+        charset='utf-8'></script>
+
+<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+</body>
+</html>
