@@ -43,6 +43,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Transactional
     public ProductCategoryExecution deleteProductCategory(long productCategoryId, long shopId) throws ProductCategoryOperationException{
        try{
+           //todo 将此类别下的商品id置为空
            int effectNum = productCategoryDao.deleteProductCategory(productCategoryId,shopId);
            if (effectNum > 0){
                return new ProductCategoryExecution(ProductCategoryStateEnum.SUCCESS);
