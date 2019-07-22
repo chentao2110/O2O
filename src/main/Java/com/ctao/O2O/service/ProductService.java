@@ -17,6 +17,14 @@ public interface ProductService {
     Product queryProductByProductId(long productId);
 
     /**
+     * 删除商品
+     * @param product
+     * @return
+     */
+    ProductExecution deleteProduct(Product product);
+    ProductExecution queryProductList(Product product ,int rowIndex,int pageSize);
+
+    /**
      * 更改商品信息
      * @param product
      * @param thumbnail

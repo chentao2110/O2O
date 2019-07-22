@@ -34,15 +34,37 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    public ProductExecution deleteProduct(Product product) {
+        if (product!=null&&product.getProductId()!=null){
+
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ProductExecution queryProductList(Product product, int rowIndex, int pageSize) {
+
+        return null;
+    }
+
+    @Override
+    @Transactional
     public ProductExecution updateProduct(Product product, ImageHoder thumbnail, List<ImageHoder> productImgList) throws ProductOperationException {
         if (product == null || product.getShop() == null || product.getShop().getShopId()==null){
             return new ProductExecution(ProductStateEnum.EMPTY);
         }else {
             product.setLastEditTime(new Date());
             product.setEnableStatus(1);
+
             if (thumbnail != null){
+                Product product1 = productDao.queryProductByProductId(product.getProductId());
+                if (product1.getImgAddr()!=null){
+                    ImageUtil.deleteFileOrPath(product1.getImgAddr());
+                }
                 addThumbnail(product,thumbnail);
             }
+
             try{
                 int effectNum = productDao.udateProduct(product);
                 if (effectNum <= 0){
@@ -51,10 +73,12 @@ public class ProductServiceImpl implements ProductService {
             }catch (Exception e){
                 throw new ProductOperationException("updateProduct error :" +e.getMessage());
             }
-            deleteProductImgList(product);
+
             if (productImgList != null && productImgList.size()>0 ){
+               deleteProductImgList(product);
                 addProductImgList(product,productImgList);
             }
+
             return new ProductExecution(ProductStateEnum.SUCCESS);
         }
 
@@ -70,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
             if (thumbnail!=null){
                 addThumbnail(product,thumbnail);
             }
+
             try{
                 int effectNum = productDao.insertProduct(product);
                 if (effectNum <= 0){
@@ -86,20 +111,23 @@ public class ProductServiceImpl implements ProductService {
             return new ProductExecution(ProductStateEnum.EMPTY);
         }
     }
+
+    /**
+     * 删除某个商品下的所有详情图
+     * @param product
+     */
     private void deleteProductImgList(Product product){
         try {
-            if (product != null && product.getProductId() != null){
-                int effectNum = productImgDao.deleteProductImgByProductId(product.getProductId());
-                if (effectNum <= 0){
-                    throw new ProductOperationException("删除商品详情图失败");
-                }
-            }else {
-                throw new ProductOperationException("商品为空或者商品ID为空");
+            List<ProductImg> productImgs = productImgDao.queryProductImgList(product.getProductId());
+            for (ProductImg img :productImgs){
+                ImageUtil.deleteFileOrPath(img.getImgAddr());
             }
+             productImgDao.deleteProductImgByProductId(product.getProductId());
         }catch (Exception e){
             throw new ProductOperationException("delete productImg error :" +e.getMessage());
         }
     }
+    @Transactional
     private void addProductImgList(Product product, List<ImageHoder> productImgHolderList) {
         String dest = PathUtil.getShopImgPath(product.getShop().getShopId());
         List<ProductImg> productImgList = new ArrayList<>();
