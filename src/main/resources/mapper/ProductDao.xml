@@ -29,7 +29,7 @@
         <collection property="productImgList" column="product_id"
                     ofType="com.ctao.O2O.entity.ProductImg">
             <id column="product_img_id" property="productImgId" />
-            <result column="img_addr" property="imgAddr" />
+            <result column="detail_img" property="imgAddr" />
             <result column="img_desc" property="imgDesc" />
             <result column="priority" property="priority" />
             <result column="create_time" property="createTime" />
@@ -37,57 +37,71 @@
         </collection>
     </resultMap>
 
-   <!-- <select id="queryProductList" resultMap="productMap">
+    <select id="queryProductList" resultMap="productMap">
         select p.product_id,p.product_name,p.product_desc,p.img_addr,
         p.normal_price,p.promotion_price,p.priority,p.create_time,
         p.last_edit_time,p.enable_status,p.product_category_id,
         p.shop_id
         from
-        tb_product p,
-        tb_product_category pc,
-        tb_product_img pi
+        tb_product p
         <where>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+               and shop_id =#{productCondition.shop.shopId}
+            </if>
+            <if test="productCondition.productCategory!=null and productCondition.productCategory.productCategoryId!=null">
+                and product_category_id = #{productCondition.productCategory.productCategoryId}
+            </if>
+            <if test="productCondition.productName != null">
+                and product_name like '%${productCondition.productName}%'
+            </if>
+            <if test="productCondition.enableStatus != null">
+                and enable_status = #{productCondition.enable_status}
+            </if>
 
         </where>
-
-    </select>-->
+        order by
+        priority desc
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
     <insert id="insertProduct" parameterType="com.ctao.O2O.entity.Product" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
         INSERT  INTO
         tb_product(product_name,product_desc,img_addr,
 		normal_price,promotion_price,priority,create_time,
 		last_edit_time,enable_status,product_category_id,
-		shop_id)
+		shop_id
+	    <if test="productId!=null">,product_id</if>)
 		VALUES
 		(#{productName},#{productDesc},#{imgAddr},
 		#{normalPrice},#{promotionPrice},#{priority},#{createTime},
 		#{lastEditTime},#{enableStatus},#{productCategory.productCategoryId},
-		#{shop.shopId})
+		#{shop.shopId}
+        <if test="productId!=null">,#{productId}</if>
+		)
     </insert>
     <update id="udateProduct" parameterType="com.ctao.O2O.entity.Product">
         UPDATE
         tb_product
         <set>
-            <if test="productName!=null">product_name = #{productName}</if>
-            <if test="productDesc != null">product_desc = #{productDesc}</if>
-            <if test="imgAddr != null">img_addr = #{imgAddr}</if>
-            <if test="normalPrice != null">normal_price = #{normalPrice}</if>
-            <if test="promotionPrice != null">promotion_price = #{promotionPrice}</if>
-            <if test="priority != null">priority = #{priority}</if>
-            <if test="createTime != null">create_time = #{createTime}</if>
-            <if test="lastEditTime != null">last_edit_time = #{lastEditTime}</if>
-            <if test="enableStatus != null">enable_status = #{enableStatus}</if>
+            <if test="productName!=null">product_name = #{productName},</if>
+            <if test="productDesc != null">product_desc = #{productDesc},</if>
+            <if test="imgAddr != null">img_addr = #{imgAddr},</if>
+            <if test="normalPrice != null">normal_price = #{normalPrice},</if>
+            <if test="promotionPrice != null">promotion_price = #{promotionPrice},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="lastEditTime != null">last_edit_time = #{lastEditTime},</if>
+            <if test="enableStatus != null">enable_status = #{enableStatus},</if>
             <if test="productCategory.productCategoryId != null">product_category_id = #{productCategory.productCategoryId}</if>
-            <if test="enableStatus != null">enable_status = #{enableStatus}</if>
         </set>
         WHERE product_id = #{productId}
-        and shop_id = #{shopId}
+        and shop_id = #{shop.shopId}
     </update>
     <select id="queryProductByProductId" resultMap="productMap" parameterType="long">
         SELECT
         p.product_id,p.product_name,p.product_desc,p.img_addr,p.normal_price,
         p.promotion_price,p.priority,p.create_time,p.last_edit_time,
-        p.enable_status,p.product_img_list,p.product_category,p.shop_id
-        pm.product_img_id,pm.img_addr,pm.img_desc,pm.priority,pm.create_time,pm.product_id
+        p.enable_status,p.img_addr,p.product_category_id,p.shop_id,
+        pm.product_img_id,pm.img_addr as detail_img,pm.img_desc,pm.priority,pm.create_time,pm.product_id
         FROM
         tb_product p
         left join
@@ -95,9 +109,9 @@
         on
         p.product_id=pm.product_id
         WHERE
-        product_id =#{product.productId}
+        p.product_id =#{product.productId}
     </select>
     <delete id="deleteProduct" >
-        delete from
+        delete from tb_product where product_id = #{productId} and shop_id = #{shop.shopId}
     </delete>
 </mapper>
