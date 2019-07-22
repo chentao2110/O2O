@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductDao {
     int udateProduct(Product product) throws ProductOperationException;
 
-    List queryProductList(@Param("ProductCondition") Product productCondition,@Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
+    List queryProductList(@Param("productCondition") Product productCondition,@Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
     /**
      * 通过productId查询product
      * @param productId
@@ -22,4 +22,5 @@ public interface ProductDao {
      * @return
      */
     int insertProduct( Product product)throws ProductOperationException;
+    int deleteProduct(Product product) throws ProductOperationException;
 }
