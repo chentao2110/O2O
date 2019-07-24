@@ -13,7 +13,7 @@ $(function () {
 
     }
     function getInfo() {
-        $.getJSON(infoUrl,function (data) {
+        $.getJSON(infoUrl,function(data){
             if (data.success){
                 var product = data.product;
                 $("#product-name").val(product.productName);

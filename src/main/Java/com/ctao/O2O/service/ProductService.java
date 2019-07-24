@@ -14,7 +14,7 @@ public interface ProductService {
      * @param productId
      * @return
      */
-    Product queryProductByProductId(long productId);
+    ProductExecution queryProductByProductId(long productId);
 
     /**
      * 删除商品

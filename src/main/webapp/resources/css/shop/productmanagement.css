@@ -16,5 +16,8 @@
     overflow-x: scroll;
 }
 .product-wrap a {
-    margin-right: 1rem;
+    margin-right: 0.1rem;
+}
+.top-center{
+    text-align: center;
 }

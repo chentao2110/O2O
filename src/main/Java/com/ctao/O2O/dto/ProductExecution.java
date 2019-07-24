@@ -13,6 +13,7 @@ public class ProductExecution {
 
     //类别数量
     private int count;
+
     private Product product;
     //product列表
     private List<Product> productList;
@@ -36,6 +37,13 @@ public class ProductExecution {
         this.state = state.getState();
         this.stateInfo = state.getStateInfo();
         this.productList = productList;
+    }
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
     public int getState() {
         return state;

@@ -36,7 +36,31 @@
             <result column="product_id" property="productId" />
         </collection>
     </resultMap>
+    <select id="queryProductCount" resultType="java.lang.Integer">
+        select  count(1) from tb_product
+        <where>
+            <if test="productCondition.productName!=null">
+                and product_name = #{productCondition.productName}
+            </if>
+            <if test="productCondition.productDesc!=null">
+                and product_desc like '%${productCondition.productDesc}%'
+            </if>
+            <if test="productCondition.promotionPrice!=null">
+                and promotion_price = #{productCondition.promotionPrice}
+            </if>
+            <if test="productCondition.enableStatus!=null">
+                and product_enable_status = #{productCondition.enableStatus}
+            </if>
+            <if test="productCondition.productCategory != null and productCondition.productCategory.productCategoryId!=null">
+                and product_category_id = #{productCondition.productCategory.productCategoryId}
+            </if>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+                and shop_id = #{productCondition.shop.shopId}
+            </if>
 
+        </where>
+
+    </select>
     <select id="queryProductList" resultMap="productMap">
         select p.product_id,p.product_name,p.product_desc,p.img_addr,
         p.normal_price,p.promotion_price,p.priority,p.create_time,
@@ -91,7 +115,7 @@
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="lastEditTime != null">last_edit_time = #{lastEditTime},</if>
             <if test="enableStatus != null">enable_status = #{enableStatus},</if>
-            <if test="productCategory.productCategoryId != null">product_category_id = #{productCategory.productCategoryId}</if>
+            <if test="productCategory != null and productCategory.productCategoryId != null">product_category_id = #{productCategory.productCategoryId}</if>
         </set>
         WHERE product_id = #{productId}
         and shop_id = #{shop.shopId}

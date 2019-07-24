@@ -11,6 +11,7 @@ import com.ctao.O2O.enums.ProductStateEnum;
 import com.ctao.O2O.service.ProductImgService;
 import com.ctao.O2O.service.ProductService;
 import com.ctao.O2O.util.ImageUtil;
+import com.ctao.O2O.util.PageCalculator;
 import com.ctao.O2O.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,24 +29,58 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
 
     @Override
-    public Product queryProductByProductId(long productId) {
-        return productDao.queryProductByProductId(productId);
+    public ProductExecution queryProductByProductId(long productId) {
+        ProductExecution pe = new ProductExecution();
+        pe.setProduct(productDao.queryProductByProductId(productId));
+        return pe;
     }
 
     @Override
     @Transactional
     public ProductExecution deleteProduct(Product product) {
-        if (product!=null&&product.getProductId()!=null){
+        //1.先判空再根据productId删除productImg表
+        ProductExecution pe = new ProductExecution();
+        if (product != null && product.getProductId() != null){
 
+            deleteProductImgList(product);
+            int effectNum = productDao.deleteProduct(product);
+            if (effectNum > 0 ){
+                pe.setState(ProductStateEnum.SUCCESS.getState());
+                pe.setStateInfo(ProductStateEnum.SUCCESS.getStateInfo());
+            }else {
+                pe.setState(ProductStateEnum.INNER_ERROR.getState());
+                pe.setStateInfo(ProductStateEnum.INNER_ERROR.getStateInfo());
+            }
+        }else {
+            throw new ProductOperationException(ProductStateEnum.INNER_ERROR.getStateInfo());
         }
-        return null;
+        return pe;
     }
 
+    /**
+     *
+     * @param product product
+     * @param pageIndex 页码
+     * @param pageSize 每页大小
+     * @return pe
+     */
     @Override
     @Transactional
-    public ProductExecution queryProductList(Product product, int rowIndex, int pageSize) {
-
-        return null;
+    public ProductExecution queryProductList(Product product, int pageIndex, int pageSize) {
+        //1.判断product是否为空
+        ProductExecution pe = new ProductExecution();
+        if (product  != null  ){
+            int rowIndex = PageCalculator.rowIndexCalculator(pageIndex, pageSize);
+            List<Product> list = productDao.queryProductList(product, rowIndex, pageSize);
+            int count = productDao.queryProductCount(product);
+            pe.setCount(count);
+            pe.setProductList(list);
+            pe.setState(ProductStateEnum.SUCCESS.getState());
+            pe.setStateInfo(ProductStateEnum.SUCCESS.getStateInfo());
+        }else {
+           throw new ProductOperationException(ProductStateEnum.EMPTY.getStateInfo());
+        }
+        return pe;
     }
 
     @Override
@@ -114,7 +149,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 删除某个商品下的所有详情图
-     * @param product
+     * @param product product
      */
     private void deleteProductImgList(Product product){
         try {
@@ -128,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
         }
     }
     @Transactional
-    private void addProductImgList(Product product, List<ImageHoder> productImgHolderList) {
+    public void addProductImgList(Product product, List<ImageHoder> productImgHolderList) {
         String dest = PathUtil.getShopImgPath(product.getShop().getShopId());
         List<ProductImg> productImgList = new ArrayList<>();
         for (ImageHoder productImgHolder:productImgHolderList) {

@@ -5,7 +5,7 @@ import com.ctao.O2O.dto.ImageHoder;
 import com.ctao.O2O.dto.ProductExecution;
 import com.ctao.O2O.entity.Product;
 import com.ctao.O2O.entity.ProductCategory;
-import com.ctao.O2O.entity.ProductImg;
+
 import com.ctao.O2O.entity.Shop;
 import com.ctao.O2O.enums.ProductStateEnum;
 import com.ctao.O2O.service.ProductCategoryService;
@@ -13,14 +13,16 @@ import com.ctao.O2O.service.ProductService;
 import com.ctao.O2O.util.CodeUtil;
 import com.ctao.O2O.util.HttpServletRequestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
-import org.springframework.web.multipart.MultipartResolver;
+
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
@@ -42,8 +44,8 @@ public class ProductManagementController {
 
     /**
      * 添加product
-     * @param request
-     * @return
+     * @param request http请求
+     * @return model
      */
     @RequestMapping(value = "/addproduct",method = RequestMethod.POST)
     @ResponseBody
@@ -58,14 +60,19 @@ public class ProductManagementController {
 
         // 接收前端参数的变量的初始化，包括商品，缩略图，详情图列表实体类
         ObjectMapper mapper = new ObjectMapper();
-        Product product = null;
+        Product product;
         ImageHoder thumbnail = null;
-        List<ImageHoder> productImgList = new ArrayList<ImageHoder>();
+        List<ImageHoder> productImgList = new ArrayList<>();
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
         try{
             // 若请求中存在文件流，则取出相关的文件（包括缩略图和详情图）
             if (multipartResolver.isMultipart(request)){
-                thumbnail = handleImage(request,thumbnail,productImgList);
+                MultipartRequest multipartRequest  = (MultipartRequest) request;
+                MultipartFile multipartFile = multipartRequest.getFile("thumbnail");
+                if (multipartFile != null) {
+                    thumbnail = new ImageHoder(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
+                }
+                thumbnail = handleImage(request, thumbnail, productImgList);
             }else {
                 modelMap.put("success",false);
                 modelMap.put("errMsg","上传的图片不能为空");
@@ -113,8 +120,64 @@ public class ProductManagementController {
         return modelMap;
 
     }
+    @RequestMapping(value = "/getproductlistbyshop", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> getProductListByShop(HttpServletRequest request){
+        Map<String, Object> modelMap = new HashMap<>();
 
-    @RequestMapping(value = "/modifyProduct",method = RequestMethod.POST)
+        //接收从前端传的信息
+        int pageSize = HttpServletRequestUtil.getInt(request,"pageSize");
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        Shop currentShop = (Shop) request.getSession().getAttribute("currentShop");
+        long productCategoryId = HttpServletRequestUtil.getLong(request, "productCategoryId");
+        String productName = HttpServletRequestUtil.getString(request,"productName");
+        String productDesc = HttpServletRequestUtil.getString(request, "productDesc");
+        int enableStatus = HttpServletRequestUtil.getInt(request, "enableStatus");
+        //判空，
+        if ((pageIndex >-1 && pageSize >-1) && (currentShop != null) && (currentShop.getShopId() != null )){
+        //根据相应条件进行分页查询
+            Product product = settingProduct(currentShop, productCategoryId, productName, productDesc, enableStatus);
+            ProductExecution pe = productService.queryProductList(product, pageIndex, pageSize);
+            if (pe.getState()==ProductStateEnum.SUCCESS.getState()){
+                modelMap.put("success",true);
+                modelMap.put("count",pe.getCount());
+                modelMap.put("productList",pe.getProductList());
+            }
+        }else {
+            modelMap.put("success", false);
+            modelMap.put("errmsg","页码设置错误或获取不到店铺信息");
+        }
+
+        //返回结果
+        return modelMap;
+    }
+
+    private Product settingProduct(Shop currentShop, long productCategoryId,
+                                   String productName, String productDesc, int enableStatus) {
+        Product product = new Product();
+        ProductCategory productCategory = new ProductCategory();
+
+        if (productCategoryId != -1l) {
+            productCategory.setProductCategoryId(productCategoryId);
+            product.setProductCategory(productCategory);
+        }
+        if (productName != null) {
+            product.setProductName(productName);
+        }
+        if (productDesc != null) {
+            product.setProductDesc(productDesc);
+        }
+        if (enableStatus==1||enableStatus ==0) {
+            product.setEnableStatus(enableStatus);
+        }
+
+
+            product.setShop(currentShop);
+
+        return product;
+    }
+
+    @RequestMapping(value = "/modifyproduct",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> modifyProduct(HttpServletRequest request){
         Map<String,Object> modelMap  = new HashMap<>();
@@ -128,8 +191,11 @@ public class ProductManagementController {
         List<ImageHoder> productImgs = new ArrayList<>();
         CommonsMultipartResolver resolver = new CommonsMultipartResolver(request.getSession().getServletContext());
         try {
+
+
+
             if (resolver.isMultipart(request)) {
-              thumbnail =  handleImage(request,thumbnail,productImgs);
+               thumbnail = handleImage(request,thumbnail,productImgs);
             }
 
             try {
@@ -163,17 +229,19 @@ public class ProductManagementController {
     }
     /**
      * 通过productid获取product和productCategory
-     * @param productId
-     * @return
+     * @param productId 商品id
+     * @return modelMap
      */
     @RequestMapping(value = "/getproductbyid",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object> getProductById(@RequestParam Long productId){
         Map<String,Object> modelMap = new HashMap<>();
         if (productId != null ){
-            Product product = productService.queryProductByProductId(productId);
+            ProductExecution pe = productService.queryProductByProductId(productId);
             List<ProductCategory> productCategoryList = productCategoryService.getProductCategoryByShopId(productId);
-            modelMap.put("product",product);
+            modelMap.put("product",pe.getProduct());
+            modelMap.put("success",true);
+
             modelMap.put("productCategoryList",productCategoryList);
         }else {
             modelMap.put("success",false);
@@ -184,11 +252,11 @@ public class ProductManagementController {
 
     /**
      * 图片处理
-     * @param request
-     * @param thumbnail
-     * @param productImgList
-     * @return
-     * @throws IOException
+     * @param request request
+     * @param thumbnail 略缩图
+     * @param productImgList 详情图列表
+     * @return modelMap
+     * @throws IOException io
      */
     private ImageHoder handleImage(HttpServletRequest request, ImageHoder thumbnail, List<ImageHoder> productImgList) throws IOException {
         MultipartRequest multipartRequest = (MultipartRequest) request;
