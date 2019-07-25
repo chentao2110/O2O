@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
             }
 
             try{
-                int effectNum = productDao.udateProduct(product);
+                int effectNum = productDao.updateProduct(product);
                 if (effectNum <= 0){
                     throw  new ProductOperationException("更改店铺失败");
                 }

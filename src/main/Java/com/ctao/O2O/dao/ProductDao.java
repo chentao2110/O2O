@@ -13,8 +13,8 @@ public interface ProductDao {
      * @return  影响结果集
      * @throws ProductOperationException product操作异常
      */
-    int updateProductcategoryToNull(@Param("productCategoryId") long productCategoryId) throws ProductOperationException;
-    int udateProduct(Product product) throws ProductOperationException;
+    int updateProductCategoryToNull(@Param("productCategoryId") long productCategoryId) throws ProductOperationException;
+    int updateProduct(Product product) throws ProductOperationException;
 
     /**
      * 查询对应条件的商品总数
