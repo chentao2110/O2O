@@ -10,7 +10,7 @@ $(function () {
                 productList.map(function (item,index) {
                     var textop = "下架";
                     var contrayStatus = 0;
-                    if (item.enableStatus==0){
+                    if (item.enableStatus=="0"){
                         textop ="上架";
                         contrayStatus =1;
                     }else {
@@ -35,14 +35,14 @@ $(function () {
         })
     }
     $(".product-wrap").on("click","a",function (e) {
-        var target = $(e.currentTarget);
+        let target = $(e.currentTarget);
         if (target.hasClass("edit")){
             window.location.href="/O2O/shopadmin/productoperation?productId="+e.currentTarget.dataset.id
         }
         if (target.hasClass("status")){
-            var product = {};
+            let product = {};
             product.productId = e.currentTarget.dataset.id;
-
+            product.enableStatus = e.currentTarget.dataset.status;
             let alertInfo =  e.currentTarget.dataset.status ==="1"?  "你确定要上架吗"  :"你确定要下架吗";
 
                 $.confirm(alertInfo,

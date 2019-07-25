@@ -1,7 +1,9 @@
 package com.ctao.O2O.service.impl;
 
 import com.ctao.O2O.Exceptions.ProductCategoryOperationException;
+import com.ctao.O2O.Exceptions.ProductOperationException;
 import com.ctao.O2O.dao.ProductCategoryDao;
+import com.ctao.O2O.dao.ProductDao;
 import com.ctao.O2O.dto.ProductCategoryExecution;
 import com.ctao.O2O.entity.ProductCategory;
 import com.ctao.O2O.enums.ProductCategoryStateEnum;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Autowired
     private ProductCategoryDao productCategoryDao;
+    private ProductDao productDao;
     @Override
     public List<ProductCategory> getProductCategoryByShopId(Long shopId) {
         return productCategoryDao.getProductCategoryListByshopId(shopId);
@@ -43,12 +46,21 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Transactional
     public ProductCategoryExecution deleteProductCategory(long productCategoryId, long shopId) throws ProductCategoryOperationException{
        try{
-           //todo 将此类别下的商品id置为空
-           int effectNum = productCategoryDao.deleteProductCategory(productCategoryId,shopId);
+           int effectNum = 0;
+           try {
+               effectNum = productDao.updateProductcategoryToNull(productCategoryId);
+               if (effectNum<=0){
+                   throw  new ProductCategoryOperationException("商品类别更新失败");
+               }
+           } catch (Exception e) {
+               throw new ProductCategoryOperationException("deleteProductCategory error :"+e.getMessage());
+           }
+
+           effectNum = productCategoryDao.deleteProductCategory(productCategoryId,shopId);
            if (effectNum > 0){
                return new ProductCategoryExecution(ProductCategoryStateEnum.SUCCESS);
            }else {
-               throw  new ProductCategoryOperationException("店铺删除失败");
+               throw  new ProductCategoryOperationException("商品类别删除失败");
            }
        }catch (Exception e){
            throw  new ProductCategoryOperationException("deleteProductCategory error :" +e.getMessage() );

@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
             return new ProductExecution(ProductStateEnum.EMPTY);
         }else {
             product.setLastEditTime(new Date());
-            product.setEnableStatus(1);
+            product.setEnableStatus(product.getEnableStatus());
 
             if (thumbnail != null){
                 Product product1 = productDao.queryProductByProductId(product.getProductId());

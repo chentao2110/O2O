@@ -7,6 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ProductDao {
+    /**
+     * 删除product前给productCategoryId值为空
+     * @param productCategoryId productId
+     * @return  影响结果集
+     * @throws ProductOperationException product操作异常
+     */
+    int updateProductcategoryToNull(@Param("productCategoryId") long productCategoryId) throws ProductOperationException;
     int udateProduct(Product product) throws ProductOperationException;
 
     /**
