@@ -109,7 +109,7 @@ public class ProductDaoTest extends BaseTest {
         product.setShop(shop);
         product.setProductName("第二个产品");
         product.setProductCategory(pc);
-        int effectNUm = productDao.udateProduct(product);
+        int effectNUm = productDao.updateProduct(product);
         assertEquals(1,effectNUm);
     }
     @Test

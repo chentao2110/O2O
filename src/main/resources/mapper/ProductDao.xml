@@ -102,7 +102,7 @@
         <if test="productId!=null">,#{productId}</if>
 		)
     </insert>
-    <update id="udateProduct" parameterType="com.ctao.O2O.entity.Product">
+    <update id="updateProduct" parameterType="com.ctao.O2O.entity.Product">
         UPDATE
         tb_product
         <set>
@@ -135,6 +135,14 @@
         WHERE
         p.product_id =#{product.productId}
     </select>
+    <update id="updateProductCategoryToNull" parameterType="Long">
+		UPDATE
+		tb_product
+		SET
+		product_category_id = null
+		WHERE product_category_id =
+		#{productCategoryId}
+	</update>
     <delete id="deleteProduct" >
         delete from tb_product where product_id = #{productId} and shop_id = #{shop.shopId}
     </delete>

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ProductCategoryDao {
+
     /**
      * 通过shopId查询店铺商品类别
      * @param shopId

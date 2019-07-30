@@ -48,7 +48,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
        try{
            int effectNum = 0;
            try {
-               effectNum = productDao.updateProductcategoryToNull(productCategoryId);
+               effectNum = productDao.updateProductCategoryToNull(productCategoryId);
                if (effectNum<=0){
                    throw  new ProductCategoryOperationException("商品类别更新失败");
                }
