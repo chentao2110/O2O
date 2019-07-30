@@ -9,7 +9,7 @@
         <result column="shop_desc" property="shopDesc"/>
         <result column="shop_addr" property="shopAddr"/>
         <result column="phone" property="phone"/>
-        <result column="shopImg" property="shopImg"/>
+        <result column="shop_img" property="shopImg"/>
         <result column="priority" property="priority"/>
         <result column="create_time" property="createTime"/>
         <result column="last_edit_time" property="lastEditTime"/>
@@ -46,6 +46,9 @@
             <if test="shopCondition.area != null and shopCondition.area.areaId!=null">
                 and s.area_id = #{shopCondition.area.areaId}
             </if>
+            <if test="shopCondition.shopCategory != null and shopCondition.shopCategory.parent!=null and shopCondition.shopCategory.parent.shopCategoryId != null">
+                and s.shop_category_id  in (select shop_category_id from tb_shop_category where  parent_id =#{shopCondition.shopCategory.parent.shopCategoryId})
+            </if>
             <if test="shopCondition.shopName!= null ">
                 and s.shop_name like '%${shopCondition.shopName}%'
             </if>
@@ -74,6 +77,9 @@
         <where>
             <if test="shopCondition.shopCategory != null and shopCondition.shopCategory.shopCategoryId != null">
                 and s.shop_category_id = #{shopCondition.shopCategory.shopCategoryId}
+            </if>
+            <if test="shopCondition.shopCategory != null and shopCondition.shopCategory.parent!=null and shopCondition.shopCategory.parent.shopCategoryId != null">
+                and s.shop_category_id  in (select shop_category_id from tb_shop_category where  parent_id =#{shopCondition.shopCategory.parent.shopCategoryId})
             </if>
             <if test="shopCondition.area != null and shopCondition.area.areaId!=null">
                 and s.area_id = #{shopCondition.area.areaId}

@@ -25,9 +25,9 @@ public interface HeadLineDao {
 
     /**
      * 根据条件查询符合条件的头条
-     * @param headLine
-     * @return
-     * @throws HeadLineOperationException
+     * @param headLine headline
+     * @return list
+     * @throws HeadLineOperationException 异常
      */
     List<HeadLine> queryHeadLineList(HeadLine headLine) throws HeadLineOperationException;
 

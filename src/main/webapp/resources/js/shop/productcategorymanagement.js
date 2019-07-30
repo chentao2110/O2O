@@ -8,23 +8,20 @@ $(function () {
             if (data.success){
                 var dataList = data.data;
                 $(".category-wrap").html("");
-                var tempHtml = "<tr>" +
-                    "        <th class='col-33'>类别</th>" +
-                    "        <th class='col-33'>优先级</th>" +
-                    "        <th class='col-33'>操作</th>" +
-                    "        </tr>";
+                var tempHtml = "";
                 dataList.map(function (item,index) {
-                    tempHtml += ''+ '<tr class="row-product-category ">'
-                        + '<td class="product-category-name">'
+                    tempHtml += ''
+                        + '<div class="row row-product-category now">'
+                        + '<div class="col-33 product-category-name">'
                         + item.productCategoryName
-                        + '</td>'
-                        + '<td >'
+                        + '</div>'
+                        + '<div class="col-33">'
                         + item.priority
-                        + '</td>'
-                        + '<td ><a href="#" class=" delete" data-id="'
+                        + '</div>'
+                        + '<div class="col-33"><a href="#" class="button delete" data-id="'
                         + item.productCategoryId
-                        + '">删除</a></td>'
-                        + '</tr>';
+                        + '">删除</a></div>'
+                        + '</div>';
 
                 })
                 $(".category-wrap").append(tempHtml);

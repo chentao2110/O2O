@@ -69,10 +69,10 @@ public class ProductManagementController {
             if (multipartResolver.isMultipart(request)){
                 MultipartRequest multipartRequest  = (MultipartRequest) request;
                 MultipartFile multipartFile = multipartRequest.getFile("thumbnail");
-                if (multipartFile != null) {
-                    thumbnail = new ImageHoder(multipartFile.getOriginalFilename(), multipartFile.getInputStream());
-                }
-                thumbnail = handleImage(request, thumbnail, productImgList);
+
+                    thumbnail =handleImage(request, thumbnail, productImgList);
+
+
             }else {
                 modelMap.put("success",false);
                 modelMap.put("errMsg","上传的图片不能为空");
@@ -234,18 +234,29 @@ public class ProductManagementController {
      */
     @RequestMapping(value = "/getproductbyid",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> getProductById(@RequestParam Long productId){
+    public Map<String,Object> getProductById(@RequestParam Long productId,HttpServletRequest request){
         Map<String,Object> modelMap = new HashMap<>();
         if (productId != null ){
             ProductExecution pe = productService.queryProductByProductId(productId);
-            List<ProductCategory> productCategoryList = productCategoryService.getProductCategoryByShopId(productId);
-            modelMap.put("product",pe.getProduct());
-            modelMap.put("success",true);
+            Shop currentShop  = (Shop) request.getSession().getAttribute("currentShop");
+            List<ProductCategory> productCategoryList;
+            if (currentShop!=null && currentShop.getShopId()!=null){
 
-            modelMap.put("productCategoryList",productCategoryList);
+                productCategoryList = productCategoryService.getProductCategoryByShopId(currentShop.getShopId());
+                modelMap.put("product",pe.getProduct());
+
+                modelMap.put("success",true);
+
+                modelMap.put("productCategoryList",productCategoryList);
+            }else {
+                modelMap.put("success",false);
+                modelMap.put("errmsg","店铺id不能为空");
+            }
+
+
         }else {
             modelMap.put("success",false);
-            modelMap.put("errmsg","店铺id不能为空");
+            modelMap.put("errmsg","商品id不能为空");
         }
         return modelMap;
     }

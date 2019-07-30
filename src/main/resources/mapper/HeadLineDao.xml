@@ -31,10 +31,9 @@
             <if test="lastEditTime!=null">  last_edit_time = #{lastEditTime},</if>
         </set>
         where  line_id = #{lineId}
-
     </update>
     <select id="queryHeadLineList" resultMap="headLineMap" parameterType="com.ctao.O2O.entity.HeadLine">
-        select line_id,line_name,line_img,line_img,priority,enable_status,create_time,last_edit_time
+        select line_id,line_name,line_link,line_img,priority,enable_status,create_time,last_edit_time
         from tb_head_line
         <where>
             <if test="lineId!=null">line_id = #{lineId}</if>
@@ -45,7 +44,7 @@
         order by priority desc ;
     </select>
     <select id="getHeadLineByLineId" resultMap="headLineMap" parameterType="long" >
-        select line_id,line_name,line_img,line_img,priority,enable_status,create_time,last_edit_time
+        select line_id,line_name,line_link,line_img,priority,enable_status,create_time,last_edit_time
         from tb_head_line
         where line_id = #{lineId}
         order by priority desc ;

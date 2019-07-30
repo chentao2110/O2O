@@ -22,13 +22,11 @@ public class DynamicDataSourceInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-
-        boolean synchronizationActive = TransactionSynchronizationManager.isActualTransactionActive();
         Object[] objects = invocation.getArgs();//返回的参数数组依次是：操作类型，sql
         MappedStatement ms = (MappedStatement) objects[0];
         String lookupKey = DynamicDataSourceHolder.DB_MASTER;
         //判断当前是否是非事务
-        if (synchronizationActive != true){
+        if (!TransactionSynchronizationManager.isActualTransactionActive() ){
 
             //读方法
             if (ms.getSqlCommandType().equals(SqlCommandType.SELECT)){
@@ -37,6 +35,7 @@ public class DynamicDataSourceInterceptor implements Interceptor {
                     lookupKey = DynamicDataSourceHolder.DB_MASTER;
                 }else {
                     BoundSql boundSql = ms.getSqlSource().getBoundSql(objects[1]);
+                    //把所有sql 变成小写并去除空格
                     String sql =boundSql.getSql().toLowerCase(Locale.CHINA).replaceAll("[\\t\\n\\r]"," ");
                     if (sql.matches(REGEX)) {
                         lookupKey = DynamicDataSourceHolder.DB_MASTER;

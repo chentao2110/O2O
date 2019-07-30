@@ -23,4 +23,8 @@ public enum HeadLineStateEnum {
     public Integer getState() {
         return state;
     }
+
+    public String getStateInfo() {
+        return stateInfo;
+    }
 }
