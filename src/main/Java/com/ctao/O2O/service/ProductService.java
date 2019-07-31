@@ -22,6 +22,7 @@ public interface ProductService {
      * @return
      */
     ProductExecution deleteProduct(Product product);
+
     ProductExecution queryProductList(Product product ,int rowIndex,int pageSize);
 
     /**

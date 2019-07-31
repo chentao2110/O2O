@@ -16,4 +16,15 @@ public class FrontendManagementController {
     public String shopList(){
         return "/frontend/shoplist";
     }
+
+    @RequestMapping("/shopdetail")
+    public String shopdetail(){
+        return "/frontend/shopdetail";
+    }
+
+    @RequestMapping(value = "/productdetail")
+    public String productDetail(){
+        return "/frontend/productdetail";
+    }
+
 }
