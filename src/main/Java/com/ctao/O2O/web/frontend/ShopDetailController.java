@@ -43,7 +43,7 @@ public class ShopDetailController {
             try {
                 Shop Shop = shopService.getByShopId(shopId);
                 modelMap.put("success", true);
-                modelMap.put("Shop", Shop);
+                modelMap.put("shop", Shop);
                 List<ProductCategory> productCategoryList = productCategoryService.getProductCategoryByShopId(shopId);
                 modelMap.put("productCategoryList", productCategoryList);
             } catch (Exception e) {
@@ -64,20 +64,20 @@ public class ShopDetailController {
     public Map<String, Object> listProductByShop(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
         long shopId = HttpServletRequestUtil.getLong(request, "shopId");
-        int pageNum = HttpServletRequestUtil.getInt(request, "pageNum");
+        int pageNum = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        long productCategoryId = HttpServletRequestUtil.getLong(request, "productCategoryId");
+        String productName = HttpServletRequestUtil.getString(request,"productName");
         ProductExecution pe;
 
-        if (shopId != -1 && pageNum >= 1 && pageSize >= 1) {
+        if ( pageNum >= 1 && pageSize >= 1) {
             try {
-                Shop shop = new Shop();
                 Product product = new Product();
-                shop.setShopId(shopId);
-                product.setShop(shop);
-
+                product = conditionStitchingShop(shopId,productName, productCategoryId);
                 pe = productService.queryProductList(product, pageNum, pageSize);
                 modelMap.put("success", true);
                 modelMap.put("productList", pe.getProductList());
+                modelMap.put("count",pe.getCount());
             } catch (Exception e) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", e.getMessage());
@@ -89,6 +89,26 @@ public class ShopDetailController {
 
 
         return modelMap;
+    }
+
+    private Product conditionStitchingShop(long shopId ,String productName, long productCategoryId) {
+        Product product = new Product();
+        if (shopId != -1 ) {
+            Shop shop = new Shop();
+            shop.setShopId(shopId);
+            product.setShop(shop);
+        }
+        if (productName!=null){
+            product.setProductName(productName);
+
+        }
+        if (productCategoryId!=-1){
+            ProductCategory productCategory = new ProductCategory();
+            productCategory.setProductCategoryId(productCategoryId);
+            product.setProductCategory(productCategory);
+        }
+        product.setEnableStatus(1);
+        return product;
     }
 
 }

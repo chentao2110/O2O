@@ -49,7 +49,7 @@
                 and promotion_price = #{productCondition.promotionPrice}
             </if>
             <if test="productCondition.enableStatus!=null">
-                and product_enable_status = #{productCondition.enableStatus}
+                and enable_status = #{productCondition.enableStatus}
             </if>
             <if test="productCondition.productCategory != null and productCondition.productCategory.productCategoryId!=null">
                 and product_category_id = #{productCondition.productCategory.productCategoryId}
@@ -79,7 +79,7 @@
                 and product_name like '%${productCondition.productName}%'
             </if>
             <if test="productCondition.enableStatus != null">
-                and enable_status = #{productCondition.enable_status}
+                and enable_status = #{productCondition.enableStatus}
             </if>
 
         </where>
