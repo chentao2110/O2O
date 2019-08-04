@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctao.O2O.dao.PersonInfoDao">
+    <resultMap id="personMap" type="com.ctao.O2O.entity.PersonInfo">
+        <id column="user_id" property="userId"/>
+        <result property="name" column="name"/>
+        <result column="profile_img" property="profileImg"/>
+        <result property="email" column="email"/>
+        <result column="gender" property="gender"/>
+        <result property="enableStatus" column="enable_status"/>
+        <result column="use_type" property="useType"/>
+        <result property="createTime" column="create_time"/>
+        <result column="last_edit_time" property="lastEditTime"/>
+    </resultMap>
+    <select id="getPersonInfoByUserId" resultMap="personMap" parameterType="long">
+        select user_id, name, profile_img, email, gender, enable_status, use_type, create_time, last_edit_time from tb_person_info where user_id = #{userId}
+    </select>
+    <insert id="addPersonInfo" parameterType="com.ctao.O2O.entity.PersonInfo" keyProperty="userId"
+            keyColumn="user_id" useGeneratedKeys="true">
+        insert  into tb_person_info
+        (name, profile_img, email, gender, create_time, last_edit_time)
+        values
+        (#{name},#{profileImg},#{email},#{gender},#{createTime},#{lastEditTime})
+    </insert>
+    <update id="updatePersonInfoByUserId" parameterType="com.ctao.O2O.entity.PersonInfo">
+        update  tb_person_info
+        <set>
+            <if test="personInfoCondition!=null and personInfoCondition.name!=null">
+                name = #{personInfoCondition.name},
+            </if>
+            <if test="personInfoCondition!=null and personInfoCondition.profileImg!=null">
+                profile_img = #{personInfoCondition.profileImg},
+            </if>
+            <if test="personInfoCondition!=null and personInfoCondition.email!=null">
+                email = #{personInfoCondition.email},
+            </if>
+            <if test="personInfoCondition!=null and personInfoCondition.gender!=null">
+                gender = #{personInfoCondition.gender},
+            </if>
+
+        </set>
+    </update>
+    <select id="getPersonInfoCount" parameterType="com.ctao.O2O.entity.PersonInfo" resultType="int">
+        select  count(1) from tb_person_info
+        <where>
+            <if test="name!=null">
+                name = #{name},
+            </if>
+            <if test="profileImg!=null">
+                profile_img = #{profileImg},
+            </if>
+            <if test="email!=null">
+                email = #{email},
+            </if>
+            <if test="gender!=null">
+                gender = #{gender},
+            </if>
+        </where>
+    </select>
+</mapper>

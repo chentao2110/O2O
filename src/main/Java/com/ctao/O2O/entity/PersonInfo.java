@@ -10,7 +10,7 @@ public class PersonInfo {
     private String gender;
     private Integer enableStatus;
     //1 :顾客 2：店家 3：超级管理员
-    private Integer userType;
+    private Integer useType;
     private Date createTime;
     private Date lastEditTime;
 
@@ -63,11 +63,11 @@ public class PersonInfo {
     }
 
     public Integer getUserType() {
-        return userType;
+        return useType;
     }
 
     public void setUserType(Integer userType) {
-        this.userType = userType;
+        this.useType = userType;
     }
 
     public Date getCreateTime() {

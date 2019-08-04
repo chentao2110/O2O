@@ -50,7 +50,7 @@
             </if>
             <if test="productCondition.enableStatus!=null">
                 and enable_status = #{productCondition.enableStatus}
-            </if>
+            </if>localAuthMap
             <if test="productCondition.productCategory != null and productCondition.productCategory.productCategoryId!=null">
                 and product_category_id = #{productCondition.productCategory.productCategoryId}
             </if>

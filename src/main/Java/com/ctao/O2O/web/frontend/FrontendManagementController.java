@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class FrontendManagementController {
     @RequestMapping("/index")
     public String index(){
-        return "/frontend/index";
+        return "/index.html";
     }
 
     @RequestMapping("/shoplist")
