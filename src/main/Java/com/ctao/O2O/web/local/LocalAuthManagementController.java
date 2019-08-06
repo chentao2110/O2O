@@ -71,31 +71,37 @@ public class LocalAuthManagementController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/userlogin", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> LoginLocalAuth(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
+        boolean needVerify = HttpServletRequestUtil.getBoolean(request, "needVerify");
         //
         ObjectMapper mapper = new ObjectMapper();
-        if (!CodeUtil.checkVerifyCode(request)) {
-            modelMap.put("success", false);
-            modelMap.put("errMsg", "验证码输入错误");
-            return modelMap;
-        }
-        String localAuthStr = HttpServletRequestUtil.getString(request, "localAuthStr");
+
+            if (needVerify&&!CodeUtil.checkVerifyCode(request)) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "验证码输入错误");
+                return modelMap;
+            }
+
+        String userName = HttpServletRequestUtil.getString(request, "userName");
+        String password = HttpServletRequestUtil.getString(request, "password");
+        Boolean checkswitch = HttpServletRequestUtil.getBoolean(request, "checkswitch");
+
         LocalAuthExecution IE = new LocalAuthExecution();
         try {
-            LocalAuth localAuth = mapper.readValue(localAuthStr, LocalAuth.class);
 
-            IE = localAuthService.getLocalAuthByName(localAuth.getUsername());
-            if (IE.getLocalAuth().getPassword().equals(localAuth.getPassword())) {
+            IE = localAuthService.getLocalAuthByName(userName);
+            if (IE.getLocalAuth().getPassword().equals(password)) {
                 modelMap.put("success", true);
-
+                request.getSession().setAttribute("username", IE.getLocalAuth().getUsername());
+                modelMap.put("usertype",checkswitch);
             } else {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", "密码错误");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             modelMap.put("success", false);
             modelMap.put("errMsg", "参数获取失败");
         }
@@ -115,5 +121,18 @@ public class LocalAuthManagementController {
             modelMap.put("type",useType);
         }
         return modelMap;
+    }
+    @RequestMapping(value = "/getsession", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getSessionforuser(HttpServletRequest request){
+        Map<String,Object> modelMap = new HashMap<>();
+        String username = (String) request.getSession().getAttribute("username");
+        if (username!= null){
+            modelMap.put("success",true);
+            modelMap.put("username", username);
+        }else {
+            modelMap.put("success", false);
+        }
+       return modelMap;
     }
 }

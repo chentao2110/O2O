@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctao.O2O.dao.HeadLineDao">
+    <resultMap id="headLineMap" type="com.ctao.O2O.entity.HeadLine">
+        <id column="line_id" property="lineId"/>
+        <result column="line_name" property="lineName"/>
+        <result column="line_link" property="lineLink"/>
+        <result column="line_img" property="lineImg"/>
+        <result property="priority" column="priority"/>
+        <result column="enable_status" property="enableStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result property="lastEditTime" column="last_edit_time"/>
+    </resultMap>
+    <insert id="addHeadLine" parameterType="com.ctao.O2O.entity.HeadLine"
+            useGeneratedKeys="true" keyColumn="line_id" keyProperty="lineId">
+        insert  into  tb_head_line (line_name, line_link, line_img, priority, create_time, last_edit_time,enable_status) 
+        value (#{lineName},#{lineLink},#{lineImg},#{priority},#{createTime},#{lastEditTime},#{enableStatus});
+    </insert>
+    <update id="modifyHeadLine" parameterType="com.ctao.O2O.entity.HeadLine">
+        update tb_head_line
+        <set>
+            <if test="lineName!=null"> line_name = #{lineName},</if>
+            <if test="lineLink!=null"> line_link = #{lineLink},</if>
+            <if test="lineImg!=null">line_img = #{lineImg},</if>
+            <if test="priority!=null"> priority = #{priority},</if>
+            <if test="enableStatus!=null"> enable_status = #{enableStatus},</if>
+            <if test="createTime!=null"> create_time = #{createTime},</if>
+
+            <if test="lastEditTime!=null">  last_edit_time = #{lastEditTime},</if>
+        </set>
+        where  line_id = #{lineId}
+    </update>
+    <select id="queryHeadLineList" resultMap="headLineMap" parameterType="com.ctao.O2O.entity.HeadLine">
+        select line_id,line_name,line_link,line_img,priority,enable_status,create_time,last_edit_time
+        from tb_head_line
+        <where>
+            <if test="lineId!=null">line_id = #{lineId}</if>
+            <if test="lineName!=null">line_name = #{lineName}</if>
+            <if test="priority!=null">priority = #{priority}</if>
+            <if test="enableStatus!=null">enable_status = #{enableStatus}</if>
+        </where>
+        order by priority desc ;
+    </select>
+    <select id="getHeadLineByLineId" resultMap="headLineMap" parameterType="long" >
+        select line_id,line_name,line_link,line_img,priority,enable_status,create_time,last_edit_time
+        from tb_head_line
+        where line_id = #{lineId}
+        order by priority desc ;
+    </select>
+</mapper>

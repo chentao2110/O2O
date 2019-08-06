@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctao.O2O.dao.LocalAuthDao">
+    <resultMap id="localAuthMap" type="com.ctao.O2O.entity.LocalAuth">
+        <id property="localAuthId" column="local_auth_id"/>
+        <result property="username" column="username"/>
+        <result column="password" property="password"/>
+        <result property="createTime" column="create_time"/>
+        <result column="last_edit_time" property="lastEditTime"/>
+        <association property="personInfo" column="user_id" javaType="com.ctao.O2O.entity.PersonInfo">
+            <id column="user_id" property="userId"/>
+            <result column="user_id" property="userId"/>
+            <result property="enableStatus" column="enable_status"/>
+            <result column="use_type" property="useType"/>
+        </association>
+    </resultMap>
+    <insert id="addLocalAuth" keyColumn="local_auth_id" keyProperty="localAuthId" useGeneratedKeys="true" parameterType="com.ctao.O2O.entity.LocalAuth" >
+        insert  into tb_local_auth
+         (user_id, username, password, create_time, last_edit_time)
+         values
+         (#{personInfo.userId},#{username},#{password},#{createTime},#{lastEditTime})
+    </insert>
+    <select id="getLocalAuthByName" resultMap="localAuthMap" parameterType="String">
+        select user_id ,username,password,create_time,last_edit_time from tb_local_auth
+        where username =#{username}
+    </select>
+    <update id="updateLocalAuth" parameterType="com.ctao.O2O.entity.LocalAuth">
+        update tb_local_auth
+        <set>
+            <if test="localAuthCondition!=null and localAuthCondition.password!=null">
+               password =#{localAuthCondition.password}
+            </if>
+        </set>
+        where username =#{localAuthCondition.username}
+    </update>
+    <select id="listAllLocalAuth" resultMap="localAuthMap" parameterType="com.ctao.O2O.entity.LocalAuth">
+        select  username,create_time,last_edit_time from tb_local_auth
+        <where>
+            <if test="localAuthCondition!=null and localAuthCondition.username!=null">
+                and username =#{localAuthCondition.username}
+            </if>
+            limit #{rowIndex},#{pageSize};
+        </where>
+
+    </select>
+    <select id="getuseTypeByUsename" resultType="int" parameterType="String">
+        SELECT tpi.use_type from tb_person_info tpi left join tb_local_auth tla on tpi.user_id = tla.user_id where tla.username = #{name}
+    </select>
+    <select id="getLocalAuthCount" resultType="int">
+        select count(1) from tb_local_auth
+    </select>
+</mapper>

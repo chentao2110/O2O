@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--redis连接池的配置-->
+    <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        &lt;!&ndash;控制一个pool最多可以产生的jedis对象&ndash;&gt;
+        <property name="maxTotal" value="${redis.pool.maxActive}"/>
+        &lt;!&ndash;连接池中最多的空闲maxIdle连接，表示即使没有数据库连接时，也最多保持maxIdle个连接，不被消除保持随时待命的状态&ndash;&gt;
+        <property name="maxIdle" value="${redis.pool.maxIdle}"/>
+        &lt;!&ndash;最大等待时间：表示连接池没有可用连接，连接等待被归还的最大时间，超出则抛出异常&ndash;&gt;
+        <property name="maxWaitMillis" value="${redis.pool.maxWait}"/>
+        &lt;!&ndash;在获取连接时保持连接的可用性&ndash;&gt;
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/>
+    </bean>-->
+</beans>

@@ -1,0 +1,23 @@
+@charset "UTF-8";
+.list-block .item-title.label{
+    width: 64%;
+}
+.father{
+
+    width: 10px;
+    height: 10px;
+}
+.new  {
+    text-align: center;
+    padding-left: 0.1rem;
+    cursor: pointer;
+    text-decoration-line :underline;
+}
+.col-33{
+    text-decoration-line :underline;
+}
+.other{
+    position: relative;
+    top: 10rem;
+
+}
